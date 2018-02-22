@@ -82,13 +82,18 @@ class Text:
         """
         return self.title
 
+## Define command line argument variables
+TO = sys.argv[1]
+BODY = sys.argv[2]
+TITLE = sys.argv[3]
+
 ## The MIMEMultipart object
-text = Text(SENDER, sys.argv[1], Text=sys.argv[2])
-message = text.generateText(sys.argv[3])
+text = Text(SENDER, TO, Text=BODY)
+message = text.generateText(TITLE)
 msg = MIMEMultipart()
 
 msg['From'] = SENDER
-msg['To'] = sys.argv[1]
+msg['To'] = TO
 msg['Subject'] = text.getTitle()
 
 msg.attach(MIMEText(message,'plain'))
@@ -97,5 +102,5 @@ server = smtplib.SMTP('smtp.gmail.com', 587)
 server.starttls()
 server.login(SENDER, PASSWORD)
 
-server.sendmail(SENDER, sys.argv[1], msg.as_string())
+server.sendmail(SENDER, TO, msg.as_string())
 server.quit()
