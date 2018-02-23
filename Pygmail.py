@@ -22,32 +22,14 @@ import re
 SENDER = "dangxiaoqian@gmail.com"
 PASSWORD = "511168020601dxq"
 
+DEFAULT_BODY = ""
+DEFAULT_TITLE = "No Subject!"
+
 ## The class text is used to generate the basic information we need to generate the email
 class Text:
 
-    DIRECTORIES = {
-    "HTML": [".html5", ".html", ".htm", ".xhtml"],
-    "IMAGES": [".jpeg", ".jpg", ".tiff", ".gif", ".bmp", ".png", ".bpg", "svg",
-               ".heif", ".psd"],
-    "VIDEOS": [".avi", ".flv", ".wmv", ".mov", ".mp4", ".webm", ".vob", ".mng",
-               ".qt", ".mpg", ".mpeg", ".3gp"],
-    "DOCUMENTS": [".oxps", ".epub", ".pages", ".docx", ".doc", ".fdf", ".ods",
-                  ".odt", ".pwi", ".xsn", ".xps", ".dotx", ".docm", ".dox",
-                  ".rvg", ".rtf", ".rtfd", ".wpd", ".xls", ".xlsx", ".ppt",
-                  "pptx"],
-    "ARCHIVES": [".a", ".ar", ".cpio", ".iso", ".tar", ".gz", ".rz", ".7z",
-                 ".dmg", ".rar", ".xar", ".zip"],
-    "AUDIO": [".aac", ".aa", ".aac", ".dvf", ".m4a", ".m4b", ".m4p", ".mp3",
-              ".msv", "ogg", "oga", ".raw", ".vox", ".wav", ".wma"],
-    "PLAINTEXT": [".txt", ".in", ".out"],
-    "PDF": [".pdf"],
-    "PYTHON": [".py"],
-    "XML": [".xml"],
-    "EXE": [".exe"],
-    "SHELL": [".sh"],
-    "C":[".c",".h"],
-    "Java":[".java"]
-    }
+    global FILE_EXTENTION
+    FILE_EXTENTION = ['.txt', '.doc','.doxc']
 
     def __init__(self, From, To, Text=None, Attached=None, hasSignature = True):
         ## define the variables
@@ -60,7 +42,7 @@ class Text:
         self.receiver = To
 
         ## message information
-        if (Text != None and re.search(r"txt", Text) ):
+        if (Text != None and (os.path.splitext(Text)[-1].lower() in FILE_EXTENTION)):
             name = os.getcwd() + "/"+Text
 
             with open(name, 'r') as file:
@@ -107,21 +89,38 @@ class Text:
         return self.title
 
 ## Define command line argument variables
-TO = sys.argv[1]
-BODY = sys.argv[2]
-TITLE = sys.argv[3]
+Input_info = sys.argv
+
+if (len(Input_info) <= 1):
+    raise Exception("Not enougth input!!")
+elif (len(Input_info) == 2):
+    TO = sys.argv[1]
+    BODY = DEFAULT_BODY
+    TITLE = DEFAULT_TITLE
+elif (len(Input_info) == 3):
+    TO = sys.argv[1]
+    BODY = sys.argv[2]
+    TITLE = DEFAULT_TITLE
+elif (len(Input_info) == 4):
+    TO = sys.argv[1]
+    BODY = sys.argv[2]
+    TITLE = sys.argv[3]
 
 ## The MIMEMultipart object
 text = Text(SENDER, TO, Text=BODY)
 message = text.generateText(TITLE)
 msg = MIMEMultipart()
 
+## Basic Information
 msg['From'] = SENDER
 msg['To'] = TO
 msg['Subject'] = text.getTitle()
 
+## Body of the message
 msg.attach(MIMEText(message,'plain'))
 
+
+## Setup to send Email
 server = smtplib.SMTP('smtp.gmail.com', 587)
 server.starttls()
 server.login(SENDER, PASSWORD)
