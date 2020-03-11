@@ -29,11 +29,12 @@ def qqplot(x_array, qpoints = 100):
     return result, normal
     
     
-    if __name__ == "__main__":
-        data_points = sorted(np.random.normal(0, 1, 100))
-        result, normal = qqplot(data_points)
+    
+ if __name__ == "__main__":
+    data_points = sorted(np.random.normal(0, 1, 100))
+    result, normal = qqplot(data_points)
         
-        plt.plot(np.linspace(-2,2,100), np.linspace(-2,2,100), '-')
-        plt.plot(result, normal, '.')
+    plt.plot(np.linspace(-2,2,100), np.linspace(-2,2,100), '-')
+    plt.plot(result, normal, '.')
 
-        plt.show()
+    plt.show()
