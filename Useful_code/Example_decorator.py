@@ -23,4 +23,27 @@ ff(4)
 ## 64
 
 
-## Example 2:
+## Example 2: A very interesting example to show how to decorate a function with many recursive calls.
+import time
+
+def slowdown(func):
+    def wrapper(*args, **kwargs):
+        time.sleep(2)
+        return func(*args, **kwargs)
+    return wrapper
+
+@slowdown
+def countDown(num):
+    if num < 1:
+        return "Times up!"
+    else:
+        print(num)
+        return countDown(num - 1)
+    
+countDown(4)
+
+## 4
+## 3
+## 2
+## 1
+## Times up!
