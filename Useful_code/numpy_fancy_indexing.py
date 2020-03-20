@@ -47,3 +47,26 @@ print(i)
 
 # add 1 to each of these bins
 np.add.at(counts, i, 1)
+
+
+## Example 2: to categorical one-hot encoding
+def to_categorical(y, dtype = 'float32'):
+    
+    y = np.array(y, dtype = int)
+    
+    input_shape = y.shape
+    
+    if input_shape and input_shape[-1] == 1 and len(input_shape) > 1:
+        input_shape = tuple(input_shape[:-1])   ## get the real dimension of input since a dim = 1 is useless
+        
+    y = y.ravel()
+    
+    num_classes = np.max(y) + 1
+    n = input_shape[0]
+    
+    categorical = np.zeros((n, num_classes), dtype = dtype)
+    categorical[np.arange(n), y] = 1
+    
+    output_shape = input_shape + (num_classes,)
+    categorical = np.reshape(categorical, output_shape)
+    return categorical
